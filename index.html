@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI SmartBudget | Finansal Yönetim Paneli</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
@@ -30,6 +30,7 @@
             display: flex;
             min-height: 100vh;
             overflow-x: hidden;
+            padding-bottom: 60px;
         }
 
         /* SIDEBAR (AI & PİYASA) */
@@ -261,15 +262,93 @@
             margin-left: 10px;
         }
 
+        /* DİNAMİK VEKTÖREL NISS CO. LOGO BUTONU (SOL ALT) */
+        .fixed-niss-signature {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            text-decoration: none;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color);
+            padding: 12px 22px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .fixed-niss-signature:hover {
+            transform: translateY(-4px);
+            border-color: var(--neon-green);
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+        }
+
+        /* Vektörel Tipografi ve Yıldız Yapısı */
+        .niss-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-white);
+            font-size: 20px;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+
+        .niss-star {
+            color: var(--neon-green);
+            font-size: 8px;
+            animation: pulse-star 2s infinite ease-in-out;
+            margin: 0 4px;
+        }
+
+        .niss-text-main {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #ffffff 0%, #dddddd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .niss-text-co {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 13px;
+            color: #a1a1aa;
+            align-self: flex-end;
+            margin-bottom: -2px;
+            margin-left: 2px;
+        }
+
+        @keyframes pulse-star {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 8px var(--neon-green); }
+        }
+
         /* MOBİL UYUM */
         @media (max-width: 1024px) {
             body { flex-direction: column; }
             .sidebar { width: 100%; height: auto; position: relative; }
             .dashboard-grid { grid-template-columns: 1fr; }
+            .fixed-niss-signature { position: relative; bottom: auto; left: auto; margin: 30px auto 10px auto; width: fit-content; }
         }
     </style>
 </head>
 <body>
+
+    <a href="https://nisanurozdemir.github.io/Budget-Tracker/" class="fixed-niss-signature" target="_blank" title="NissDesign Studio">
+        <div class="niss-logo-container">
+            <span class="niss-star">✦</span>
+            <span class="niss-text-main">NISS</span>
+            <span class="niss-star">✦</span>
+            <span class="niss-text-co">co.</span>
+        </div>
+    </a>
 
     <div class="sidebar">
         <div class="logo">
@@ -311,7 +390,7 @@
 
     <div class="main-content">
         <header>
-            <h1>Budget Tracker Pro</h1>
+            <h1>Finansal Özet</h1>
             <div class="currency-selector">
                 <button class="currency-btn active">TRY</button>
                 <button class="currency-btn">USD</button>
@@ -413,9 +492,8 @@
     </div>
 
     <script>
-        let currentUsdRate = 45.85; // Fallback varsayılan kur
+        let currentUsdRate = 45.85;
 
-        // Canlı Döviz Kurlarını Çeken API Fonksiyonu
         async function fetchLiveRates() {
             try {
                 const response = await fetch('https://open.er-api.com/v6/latest/USD');
@@ -429,13 +507,12 @@
                     document.getElementById('eur-rate').innerText = eurToTry.toFixed(2) + " ₺";
                 }
             } catch (error) {
-                console.error("Kurlar API'den alınamadı, yerel veriler kullanılıyor:", error);
+                console.error("Kurlar alınamadı, yerel veriler aktif.", error);
                 document.getElementById('usd-rate').innerText = "45.85 ₺";
                 document.getElementById('eur-rate').innerText = "49.62 ₺";
             }
         }
 
-        // Bütçe ve 50-30-20 Kuralı Hesaplama Fonksiyonu
         function calculateBudget() {
             const salary = parseFloat(document.getElementById('net-salary').value) || 0;
             const kira = parseFloat(document.getElementById('kira').value) || 0;
@@ -445,17 +522,14 @@
             const spor = parseFloat(document.getElementById('spor').value) || 0;
             const istek = parseFloat(document.getElementById('istek').value) || 0;
 
-            // Dağılım Grupları
             const totalMandatory = kira + fatura + mutfak;
-            const totalNeeds = totalMandatory + saglik; // İhtiyaçlar grubu
-            const totalWants = spor + istek;            // İstekler grubu
+            const totalNeeds = totalMandatory + saglik;
+            const totalWants = spor + istek;
             const remaining = salary - (totalNeeds + totalWants);
             
-            // DOM Alanlarını Güncelleme
             document.getElementById('total-mandatory').innerText = totalMandatory.toLocaleString() + " ₺";
             document.getElementById('remaining-balance').innerText = (remaining > 0 ? remaining : 0).toLocaleString() + " ₺";
             
-            // İdeal yatırım potansiyeli bütçenin %20'sidir
             const idealInvestment = salary * 0.2;
             document.getElementById('investment-potential').innerText = idealInvestment.toLocaleString() + " ₺";
 
@@ -464,7 +538,6 @@
                 const wantsPct = (totalWants / salary) * 100;
                 const savingsPct = (remaining / salary) * 100;
 
-                // Barları Güncelle
                 document.getElementById('needs-bar').style.width = Math.min(needsPct, 100) + "%";
                 document.getElementById('wants-bar').style.width = Math.min(wantsPct, 100) + "%";
                 document.getElementById('savings-bar').style.width = Math.max(0, Math.min(savingsPct, 100)) + "%";
@@ -473,23 +546,22 @@
                 document.getElementById('wants-percent').innerText = "%" + wantsPct.toFixed(1);
                 document.getElementById('savings-percent').innerText = "%" + (savingsPct > 0 ? savingsPct.toFixed(1) : 0);
 
-                // AI Yorumlama Algoritması
                 let aiFeedbackText = "";
                 let aiInsightText = "";
                 let aiPortfolioText = "";
 
                 if (needsPct > 50) {
                     aiFeedbackText = "⚠️ Dikkat: İhtiyaç harcamalarınız %50 limitini aşmış durumda!";
-                    aiInsightText = "Zorunlu harcamalarınız çok yüksek. Tasarruf oranını korumak için eğlence ve spor bütçesinden kesinti yapmanızı öneririm.";
+                    aiInsightText = "Zorunlu harcamalarınız çok yüksek. Tasarruf oranını korumak için eğlence bütçesinden kesinti yapmanızı öneririm.";
                     aiPortfolioText = "Bütçede daralma var. Portföyü korumak için riski düşük, likit kalabileceğiniz para piyasası fonlarını değerlendirin.";
                 } else if (savingsPct < 20) {
                     aiFeedbackText = "💡 Öneri: İsteklerinizden kısıp yatırım payını %20'ye çıkartın.";
                     aiInsightText = `Dolar kuru anlık ${currentUsdRate.toFixed(2)} ₺. Birikimlerinizin enflasyona yenilmemesi için bütçenin en az %20'sini yatırıma taşımalısınız.`;
-                    aiPortfolioText = "Mevcut kurlarla, istek bütçenizden yapacağınız her 500 ₺ tasarruf ile BIST 100 veya S&P 500 endeks fonlarına ekleme yapabilirsiniz.";
+                    aiPortfolioText = "Mevcut kurlarla, istek bütçenizden yapacağınız her birikimle BIST 100 veya S&P 500 endeks fonlarına ekleme yapabilirsiniz.";
                 } else {
                     aiFeedbackText = "✅ Tebrikler! 50-30-20 kuralına tam uyum sağlıyorsunuz.";
                     aiInsightText = "Finansal sağlığınız çok iyi durumda. Yapay zeka modeli mevcut harcama hızınızı optimize olarak değerlendirdi.";
-                    aiPortfolioText = `Aylık ayırdığınız ${idealInvestment.toLocaleString()} ₺ yatırım bütçesinin %40'ını eurobond/döviz bazlı fonlara, %40'ını BIST teknoloji hisselerine, %20'sini ise altına dağıtmak dengeli bir portföy sağlayacaktır.`;
+                    aiPortfolioText = `Aylık ayırdığınız ${idealInvestment.toLocaleString()} ₺ yatırım bütçesinin %40'ını eurobond/döviz fonlarına, %40'ını teknoloji hisselerine, %20'sini ise altına dağıtmak dengeli bir portföy sağlayacaktır.`;
                 }
 
                 document.getElementById('ai-feedback').innerText = aiFeedbackText;
@@ -498,7 +570,6 @@
             }
         }
 
-        // Sayfa ilk yüklendiğinde çalışacak tetikleyiciler
         window.onload = function() {
             fetchLiveRates();
             calculateBudget();
