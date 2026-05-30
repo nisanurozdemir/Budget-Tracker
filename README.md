@@ -5,7 +5,7 @@ AI SmartBudget is a serverless personal finance and wealth management dashboard 
 It is designed to help users optimize their income-to-expense ratio while building sustainable investment strategies to protect their savings against inflation.
 
 ## 🚀 Live Demo
-You can view the live version of the project here: `https://<your-username>.github.io/<your-repo-name>/`
+You can view the live version of the project here: `https://nisanurozdemir.github.io/Budget-Tracker/`
 
 ## 🛠️ Key Features
 
