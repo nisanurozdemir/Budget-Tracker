@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI SmartBudget | Finansal Yönetim Paneli</title>
+    <title>Budget Tracker Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -49,7 +49,7 @@
 
         .logo {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: var(--neon-green);
             margin-bottom: 20px;
@@ -110,25 +110,32 @@
             margin-bottom: 40px;
         }
 
-        .currency-selector {
+        .selectors-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        .custom-selector {
             display: flex;
             background: #1a1a1a;
             padding: 5px;
             border-radius: 30px;
+            border: 1px solid var(--border-color);
         }
 
-        .currency-btn {
-            padding: 8px 20px;
+        .selector-btn {
+            padding: 8px 16px;
             border: none;
             background: transparent;
             color: var(--text-gray);
             cursor: pointer;
             border-radius: 20px;
             font-weight: bold;
+            font-size: 13px;
             transition: 0.3s;
         }
 
-        .currency-btn.active {
+        .selector-btn.active {
             background: var(--neon-green);
             color: black;
         }
@@ -186,7 +193,7 @@
             gap: 8px;
         }
 
-        .cat-item label { font-size: 13px; color: var(--text-gray); }
+        .cat-item label { font-size: 13px; color: var(--text-gray); display: flex; align-items: center; justify-content: space-between; }
         
         .cat-input {
             background: #1a1a1a;
@@ -195,7 +202,9 @@
             border-radius: 8px;
             color: white;
             width: 100%;
+            outline: none;
         }
+        .cat-input:focus { border-color: var(--neon-green); }
 
         /* 50-30-20 ANALİZİ */
         .analysis-card h3 {
@@ -255,14 +264,13 @@
         .mandatory-badge {
             background: #3c1e1e;
             color: #ff4d4d;
-            padding: 2px 8px;
+            padding: 2px 6px;
             border-radius: 4px;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
-            margin-left: 10px;
         }
 
-        /* DİNAMİK VEKTÖREL NISS CO. LOGO BUTONU (SOL ALT) */
+        /* DİNAMİK VEKTÖREL NISS CO. LOGO BUTONU (SAĞ ALTTA) */
         .fixed-niss-signature {
             position: fixed;
             bottom: 20px;
@@ -288,7 +296,6 @@
             box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
         }
 
-        /* Vektörel Tipografi ve Yıldız Yapısı */
         .niss-logo-container {
             display: flex;
             align-items: center;
@@ -335,7 +342,8 @@
             body { flex-direction: column; }
             .sidebar { width: 100%; height: auto; position: relative; }
             .dashboard-grid { grid-template-columns: 1fr; }
-            .fixed-niss-signature { position: relative; bottom: auto; left: auto; margin: 30px auto 10px auto; width: fit-content; }
+            header { flex-direction: column; gap: 20px; align-items: flex-start; }
+            .fixed-niss-signature { position: relative; bottom: auto; right: auto; margin: 30px auto 10px auto; width: fit-content; }
         }
     </style>
 </head>
@@ -352,16 +360,16 @@
 
     <div class="sidebar">
         <div class="logo">
-            <i class="fa-solid fa-brain"></i> SMART BUDGET
+            <i class="fa-solid fa-brain"></i> <span id="side-main-title">BUDGET PRO</span>
         </div>
 
         <div class="ai-assistant-box">
-            <div class="ai-title"><i class="fa-solid fa-sparkles"></i> AI YATIRIM ASİSTANI</div>
+            <div class="ai-title"><i class="fa-solid fa-sparkles"></i> <span id="ai-title-1">AI YATIRIM ASİSTANI</span></div>
             <p id="ai-insight">Maaşınızı girerek analizi başlatın. Bugün bütçenizi optimize etmek için buradayım.</p>
         </div>
 
         <div class="market-section">
-            <h4>Canlı Kurlar & Borsa</h4>
+            <h4 id="market-title">Canlı Kurlar & Borsa</h4>
             <div class="market-card">
                 <span>USD/TRY</span>
                 <span class="price" id="usd-rate">Yükleniyor...</span>
@@ -383,69 +391,76 @@
         </div>
 
         <div class="ai-assistant-box" style="background: var(--dark-green); border: none;">
-            <div class="ai-title" style="color: white;"><i class="fa-solid fa-chart-line"></i> AI PORTFÖY ÖNERİSİ</div>
+            <div class="ai-title" style="color: white;"><i class="fa-solid fa-chart-line"></i> <span id="ai-title-2">AI PORTFÖY ÖNERİSİ</span></div>
             <p id="ai-portfolio-text">Bütçe dağılımınıza göre yatırım stratejisi burada şekillenecek.</p>
         </div>
     </div>
 
     <div class="main-content">
         <header>
-            <h1>Budget Tracker Pro</h1>
-            <div class="currency-selector">
-                <button class="currency-btn active">TRY</button>
-                <button class="currency-btn">USD</button>
-                <button class="currency-btn">EUR</button>
+            <h1 id="main-header-title">Budget Tracker Pro</h1>
+            <div class="selectors-container">
+                <div class="custom-selector">
+                    <button class="selector-btn currency-btn active" onclick="changeCurrency('TRY')">TRY</button>
+                    <button class="selector-btn currency-btn" onclick="changeCurrency('USD')">USD</button>
+                    <button class="selector-btn currency-btn" onclick="changeCurrency('EUR')">EUR</button>
+                </div>
+                <div class="custom-selector">
+                    <button class="selector-btn lang-btn active" onclick="changeLanguage('TR')">TR</button>
+                    <button class="selector-btn lang-btn" onclick="changeLanguage('EN')">EN</button>
+                    <button class="selector-btn lang-btn" onclick="changeLanguage('ES')">ES</button>
+                </div>
             </div>
         </header>
 
         <div class="dashboard-grid">
             <div class="card">
                 <div class="salary-input-group">
-                    <label>NET MAAŞINIZ</label>
+                    <label id="lbl-net-salary">NET MAAŞINIZ</label>
                     <input type="number" id="net-salary" placeholder="0.00" oninput="calculateBudget()">
                 </div>
 
                 <div class="category-grid">
                     <div class="cat-item">
-                        <label>Kira <span class="mandatory-badge">ZORUNLU</span></label>
+                        <label><span id="lbl-kira">Kira</span> <span class="mandatory-badge badge-txt">ZORUNLU</span></label>
                         <input type="number" class="cat-input" id="kira" placeholder="0" oninput="calculateBudget()">
                     </div>
                     <div class="cat-item">
-                        <label>Faturalar <span class="mandatory-badge">ZORUNLU</span></label>
+                        <label><span id="lbl-fatura">Faturalar</span> <span class="mandatory-badge badge-txt">ZORUNLU</span></label>
                         <input type="number" class="cat-input" id="fatura" placeholder="0" oninput="calculateBudget()">
                     </div>
                     <div class="cat-item">
-                        <label>Mutfak / Temel İhtiyaç <span class="mandatory-badge">ZORUNLU</span></label>
+                        <label><span id="lbl-mutfak">Mutfak / Temel İhtiyaç</span> <span class="mandatory-badge badge-txt">ZORUNLU</span></label>
                         <input type="number" class="cat-input" id="mutfak" placeholder="0" oninput="calculateBudget()">
                     </div>
                     <div class="cat-item">
-                        <label>Sağlık Giderleri</label>
+                        <label id="lbl-saglik">Sağlık Giderleri</label>
                         <input type="number" class="cat-input" id="saglik" placeholder="0" oninput="calculateBudget()">
                     </div>
                     <div class="cat-item">
-                        <label>Spor Aktivite</label>
+                        <label id="lbl-spor">Spor Aktivite</label>
                         <input type="number" class="cat-input" id="spor" placeholder="0" oninput="calculateBudget()">
                     </div>
                     <div class="cat-item">
-                        <label>Eğlence / İstekler</label>
+                        <label id="lbl-istek">Eğlence / İstekler</label>
                         <input type="number" class="cat-input" id="istek" placeholder="0" oninput="calculateBudget()">
                     </div>
                 </div>
 
                 <div class="mandatory-section">
                     <div style="display: flex; justify-content: space-between;">
-                        <span>Toplam Zorunlu Giderler:</span>
+                        <span id="lbl-total-mandatory">Toplam Zorunlu Giderler:</span>
                         <span id="total-mandatory" style="color: #ff4d4d; font-weight: bold;">0 ₺</span>
                     </div>
                 </div>
             </div>
 
             <div class="card analysis-card">
-                <h3>50-30-20 Analizi</h3>
+                <h3 id="lbl-analysis-title">50-30-20 Analizi</h3>
                 
                 <div class="progress-container">
                     <div class="progress-label">
-                        <span>İhtiyaçlar (Limit: %50)</span>
+                        <span id="lbl-needs-title">İhtiyaçlar (Limit: %50)</span>
                         <span id="needs-percent">%0</span>
                     </div>
                     <div class="progress-bar">
@@ -455,7 +470,7 @@
 
                 <div class="progress-container">
                     <div class="progress-label">
-                        <span>İstekler (Limit: %30)</span>
+                        <span id="lbl-wants-title">İstekler (Limit: %30)</span>
                         <span id="wants-percent">%0</span>
                     </div>
                     <div class="progress-bar">
@@ -465,7 +480,7 @@
 
                 <div class="progress-container">
                     <div class="progress-label">
-                        <span>Yatırım / Tasarruf (Hedef: %20)</span>
+                        <span id="lbl-savings-title">Yatırım / Tasarruf (Hedef: %20)</span>
                         <span id="savings-percent">%0</span>
                     </div>
                     <div class="progress-bar">
@@ -475,11 +490,11 @@
 
                 <div class="summary-stats">
                     <div class="stat-box">
-                        <p>Kalan Bakiye</p>
+                        <p id="lbl-remaining-balance">Kalan Bakiye</p>
                         <h4 id="remaining-balance">0 ₺</h4>
                     </div>
                     <div class="stat-box">
-                        <p>Yatırıma Uygun Pay</p>
+                        <p id="lbl-investment-potential">Yatırıma Uygun Pay</p>
                         <h4 id="investment-potential">0 ₺</h4>
                     </div>
                 </div>
@@ -493,7 +508,117 @@
 
     <script>
         let currentUsdRate = 45.85;
+        let currentCurrency = 'TRY';
+        let currentLang = 'TR';
+        let currencySymbol = '₺';
 
+        // DİL SÖZLÜĞÜ (DİLLERE GÖRE TÜM BAŞLIKLAR VE YORUMLAR)
+        const languages = {
+            TR: {
+                sideMain: "BUDGET PRO",
+                aiTitle1: "AI YATIRIM ASİSTANI",
+                aiTitle2: "AI PORTFÖY ÖNERİSİ",
+                marketTitle: "Canlı Kurlar & Borsa",
+                mainHeader: "Budget Tracker Pro",
+                netSalary: "NET MAAŞINIZ",
+                kira: "Kira",
+                fatura: "Faturalar",
+                mutfak: "Mutfak / Temel İhtiyaç",
+                saglik: "Sağlık Giderleri",
+                spor: "Spor Aktivite",
+                istek: "Eğlence / İstekler",
+                totalMandatory: "Toplam Zorunlu Giderler:",
+                analysisTitle: "50-30-20 Analizi",
+                needsTitle: "İhtiyaçlar (Limit: %50)",
+                wantsTitle: "İstekler (Limit: %30)",
+                savingsTitle: "Yatırım / Tasarruf (Hedef: %20)",
+                remainingBalance: "Kalan Bakiye",
+                investmentPotential: "Yatırıma Uygun Pay",
+                badge: "ZORUNLU",
+                waitData: "Analiz için veri bekleniyor...",
+                startBox: "Maaşınızı girerek analizi başlatın. Bugün bütçenizi optimize etmek için buradayım.",
+                startPort: "Bütçe dağılımınıza göre yatırım stratejisi burada şekillenecek.",
+                feedDanger: "⚠️ Dikkat: İhtiyaç harcamalarınız %50 limitini aşmış durumda!",
+                insightDanger: "Zorunlu harcamalarınız çok yüksek. Tasarruf oranını korumak için eğlence bütçesinden kesinti yapmanızı öneririm.",
+                portDanger: "Bütçede daralma var. Portföyü korumak için riski düşük, likit kalabileceğiniz para piyasası fonlarını değerlendirin.",
+                feedWarning: "💡 Öneri: İsteklerinizden kısıp yatırım payını %20'ye çıkartın.",
+                insightWarning: "Birikimlerinizin enflasyona yenilmemesi için bütçenin en az %20'sini yatırıma taşımalısınız.",
+                portWarning: "Mevcut kurlarla, istek bütçenizden yapacağınız her birikimle endeks fonlarına veya altına ekleme yapabilirsiniz.",
+                feedSuccess: "✅ Tebrikler! 50-30-20 kuralına tam uyum sağlıyorsunuz.",
+                insightSuccess: "Finansal sağlığınız çok iyi durumda. Yapay zeka modeli mevcut harcama hızınızı optimize olarak değerlendirdi.",
+                portSuccess: "Aylık yatırım bütçenizin %40'ını döviz fonlarına, %40'ını teknoloji hisselerine, %20'sini ise altına dağıtmak dengeli bir portföy sağlayacaktır."
+            },
+            EN: {
+                sideMain: "BUDGET PRO",
+                aiTitle1: "AI INVESTMENT ASSISTANT",
+                aiTitle2: "AI PORTFOLIO SUGGESTION",
+                marketTitle: "Live Rates & Markets",
+                mainHeader: "Budget Tracker Pro",
+                netSalary: "NET SALARY",
+                kira: "Rent",
+                fatura: "Utilities",
+                mutfak: "Groceries / Core Needs",
+                saglik: "Healthcare",
+                spor: "Fitness / Sports",
+                istek: "Entertainment / Wants",
+                totalMandatory: "Total Mandatory Expenses:",
+                analysisTitle: "50-30-20 Analysis",
+                needsTitle: "Needs (Limit: 50%)",
+                wantsTitle: "Wants (Limit: 30%)",
+                savingsTitle: "Savings / Investments (Target: 20%)",
+                remainingBalance: "Remaining Balance",
+                investmentPotential: "Investment Potential",
+                badge: "REQUIRED",
+                waitData: "Awaiting financial data for analysis...",
+                startBox: "Enter your salary to start the analysis. I am here to optimize your budget today.",
+                startPort: "Your investment strategy will shape here based on your budget allocation.",
+                feedDanger: "⚠️ Warning: Your needs expenses have exceeded the 50% limit!",
+                insightDanger: "Your mandatory expenses are too high. I suggest cutting back on your entertainment budget to preserve savings.",
+                portDanger: "Budget contraction detected. To protect your portfolio, consider low-risk, highly liquid money market funds.",
+                feedWarning: "💡 Suggestion: Reduce your wants to increase your investment share to 20%.",
+                insightWarning: "To prevent your savings from being eroded by inflation, you should allocate at least 20% of your budget to investments.",
+                portWarning: "With current market rates, any extra savings from your discretionary budget can be added to index funds or gold.",
+                feedSuccess: "✅ Congratulations! Perfect adherence to the 50-30-20 rule.",
+                insightSuccess: "Your financial health is excellent. The AI model evaluated your current spending rate as highly optimized.",
+                portSuccess: "Allocating 40% of your monthly investment budget to foreign exchange funds, 40% to tech stocks, and 20% to gold will provide a balanced portfolio."
+            },
+            ES: {
+                sideMain: "BUDGET PRO",
+                aiTitle1: "ASISTENTE DE INVERSIÓN IA",
+                aiTitle2: "SUGERENCIA DE PORTAFOLIO IA",
+                marketTitle: "Tasas en Vivo y Mercados",
+                mainHeader: "Budget Tracker Pro",
+                netSalary: "SALARIO NETO",
+                kira: "Alquiler",
+                fatura: "Servicios Públicos",
+                mutfak: "Comestibles / Necesidades",
+                saglik: "Atención Médica",
+                spor: "Gimnasio / Deportes",
+                istek: "Entretenimiento / Deseos",
+                totalMandatory: "Gastos Obligatorios Totales:",
+                analysisTitle: "Análisis 50-30-20",
+                needsTitle: "Necesidades (Límite: 50%)",
+                wantsTitle: "Deseos (Límite: 30%)",
+                savingsTitle: "Ahorro / Inversión (Objetivo: 20%)",
+                remainingBalance: "Saldo Restante",
+                investmentPotential: "Potencial de Inversión",
+                badge: "OBLIGATORIO",
+                waitData: "Esperando datos financieros para el análisis...",
+                startBox: "Ingrese su salario para comenzar el análisis. Estoy aquí para optimizar su presupuesto hoy.",
+                startPort: "Su estrategia de inversión se formará aquí según su asignación presupuestaria.",
+                feedDanger: "⚠️ Advertencia: ¡Sus gastos de necesidades han superado el límite del 50%!",
+                insightDanger: "Sus gastos obligatorios son demasiado altos. Sugiero reducir el presupuesto de entretenimiento para preservar los ahorros.",
+                portDanger: "Contracción presupuestaria detectada. Para proteger su cartera, considere fondos monetarios de bajo riesgo y alta liquidez.",
+                feedWarning: "💡 Sugerencia: Reduzca sus deseos para aumentar su cuota de inversión al 20%.",
+                insightWarning: "Para evitar que la inflación erosione sus ahorros, debe asignar al menos el 20% de su presupuesto a inversiones.",
+                portWarning: "Con las tasas actuales, cualquier ahorro adicional de su presupuesto discrecional puede agregarse a fondos indexados o oro.",
+                feedSuccess: "✅ ¡Felicitaciones! Cumplimiento perfecto de la regla 50-30-20.",
+                insightSuccess: "Su salud financiera es excelente. El modelo de IA evaluó su tasa de gasto actual como altamente optimizada.",
+                portSuccess: "Asignar el 40% de su presupuesto mensual de inversión a fondos de divisas, el 40% a acciones tecnológicas y el 20% a oro proporcionará una cartera equilibrada."
+            }
+        };
+
+        // CANLI KURLARI GETİR
         async function fetchLiveRates() {
             try {
                 const response = await fetch('https://open.er-api.com/v6/latest/USD');
@@ -513,6 +638,63 @@
             }
         }
 
+        // DÖVİZ DEĞİŞTİRME FONKSİYONU (ÇALIŞIYOR)
+        function changeCurrency(currency) {
+            currentCurrency = currency;
+            if(currency === 'TRY') currencySymbol = '₺';
+            else if(currency === 'USD') currencySymbol = '$';
+            else if(currency === 'EUR') currencySymbol = '€';
+
+            // Buton aktiflik sınıflarını güncelle
+            document.querySelectorAll('.currency-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText === currency) btn.classList.add('active');
+            });
+
+            calculateBudget();
+        }
+
+        // DİL DEĞİŞTİRME FONKSİYONU
+        function changeLanguage(lang) {
+            currentLang = lang;
+            
+            // Buton aktiflik sınıflarını güncelle
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.innerText === lang) btn.classList.add('active');
+            });
+
+            // Metinleri Güncelle
+            const t = languages[lang];
+            document.getElementById('side-main-title').innerText = t.sideMain;
+            document.getElementById('ai-title-1').innerText = t.aiTitle1;
+            document.getElementById('ai-title-2').innerText = t.aiTitle2;
+            document.getElementById('market-title').innerText = t.marketTitle;
+            document.getElementById('main-header-title').innerText = t.mainHeader;
+            document.getElementById('lbl-net-salary').innerText = t.netSalary;
+            document.getElementById('lbl-kira').innerText = t.kira;
+            document.getElementById('lbl-fatura').innerText = t.fatura;
+            document.getElementById('lbl-mutfak').innerText = t.mutfak;
+            document.getElementById('lbl-saglik').innerText = t.saglik;
+            document.getElementById('lbl-spor').innerText = t.spor;
+            document.getElementById('lbl-istek').innerText = t.istek;
+            document.getElementById('lbl-total-mandatory').innerText = t.totalMandatory;
+            document.getElementById('lbl-analysis-title').innerText = t.analysisTitle;
+            document.getElementById('lbl-needs-title').innerText = t.needsTitle;
+            document.getElementById('lbl-wants-title').innerText = t.wantsTitle;
+            document.getElementById('lbl-savings-title').innerText = t.savingsTitle;
+            document.getElementById('lbl-remaining-balance').innerText = t.remainingBalance;
+            document.getElementById('lbl-investment-potential').innerText = t.investmentPotential;
+
+            // Rozet kelimelerini güncelle
+            document.querySelectorAll('.badge-txt').forEach(badge => {
+                badge.innerText = t.badge;
+            });
+
+            calculateBudget();
+        }
+
+        // BÜTÇE VE ANALİZ HESAPLAYICI
         function calculateBudget() {
             const salary = parseFloat(document.getElementById('net-salary').value) || 0;
             const kira = parseFloat(document.getElementById('kira').value) || 0;
@@ -527,11 +709,14 @@
             const totalWants = spor + istek;
             const remaining = salary - (totalNeeds + totalWants);
             
-            document.getElementById('total-mandatory').innerText = totalMandatory.toLocaleString() + " ₺";
-            document.getElementById('remaining-balance').innerText = (remaining > 0 ? remaining : 0).toLocaleString() + " ₺";
+            // Para birimine göre ekrana yazdırma
+            document.getElementById('total-mandatory').innerText = totalMandatory.toLocaleString() + " " + currencySymbol;
+            document.getElementById('remaining-balance').innerText = (remaining > 0 ? remaining : 0).toLocaleString() + " " + currencySymbol;
             
             const idealInvestment = salary * 0.2;
-            document.getElementById('investment-potential').innerText = idealInvestment.toLocaleString() + " ₺";
+            document.getElementById('investment-potential').innerText = idealInvestment.toLocaleString() + " " + currencySymbol;
+
+            const t = languages[currentLang];
 
             if (salary > 0) {
                 const needsPct = (totalNeeds / salary) * 100;
@@ -551,28 +736,40 @@
                 let aiPortfolioText = "";
 
                 if (needsPct > 50) {
-                    aiFeedbackText = "⚠️ Dikkat: İhtiyaç harcamalarınız %50 limitini aşmış durumda!";
-                    aiInsightText = "Zorunlu harcamalarınız çok yüksek. Tasarruf oranını korumak için eğlence bütçesinden kesinti yapmanızı öneririm.";
-                    aiPortfolioText = "Bütçede daralma var. Portföyü korumak için riski düşük, likit kalabileceğiniz para piyasası fonlarını değerlendirin.";
+                    aiFeedbackText = t.feedDanger;
+                    aiInsightText = t.insightDanger;
+                    aiPortfolioText = t.portDanger;
                 } else if (savingsPct < 20) {
-                    aiFeedbackText = "💡 Öneri: İsteklerinizden kısıp yatırım payını %20'ye çıkartın.";
-                    aiInsightText = `Dolar kuru anlık ${currentUsdRate.toFixed(2)} ₺. Birikimlerinizin enflasyona yenilmemesi için bütçenin en az %20'sini yatırıma taşımalısınız.`;
-                    aiPortfolioText = "Mevcut kurlarla, istek bütçenizden yapacağınız her birikimle BIST 100 veya S&P 500 endeks fonlarına ekleme yapabilirsiniz.";
+                    aiFeedbackText = t.feedWarning;
+                    aiInsightText = t.insightWarning;
+                    aiPortfolioText = t.portWarning;
                 } else {
-                    aiFeedbackText = "✅ Tebrikler! 50-30-20 kuralına tam uyum sağlıyorsunuz.";
-                    aiInsightText = "Finansal sağlığınız çok iyi durumda. Yapay zeka modeli mevcut harcama hızınızı optimize olarak değerlendirdi.";
-                    aiPortfolioText = `Aylık ayırdığınız ${idealInvestment.toLocaleString()} ₺ yatırım bütçesinin %40'ını eurobond/döviz fonlarına, %40'ını teknoloji hisselerine, %20'sini ise altına dağıtmak dengeli bir portföy sağlayacaktır.`;
+                    aiFeedbackText = t.feedSuccess;
+                    aiInsightText = t.insightSuccess;
+                    aiPortfolioText = t.portSuccess;
                 }
 
                 document.getElementById('ai-feedback').innerText = aiFeedbackText;
                 document.getElementById('ai-insight').innerText = aiInsightText;
                 document.getElementById('ai-portfolio-text').innerText = aiPortfolioText;
+            } else {
+                // Veri yoksa sıfırla ve varsayılan dil metnini bas
+                document.getElementById('needs-bar').style.width = "0%";
+                document.getElementById('wants-bar').style.width = "0%";
+                document.getElementById('savings-bar').style.width = "0%";
+                document.getElementById('needs-percent').innerText = "%0";
+                document.getElementById('wants-percent').innerText = "%0";
+                document.getElementById('savings-percent').innerText = "%0";
+                
+                document.getElementById('ai-feedback').innerText = t.waitData;
+                document.getElementById('ai-insight').innerText = t.startBox;
+                document.getElementById('ai-portfolio-text').innerText = t.startPort;
             }
         }
 
         window.onload = function() {
             fetchLiveRates();
-            calculateBudget();
+            changeLanguage('TR'); // Varsayılan olarak Türkçe başlar
         };
     </script>
 </body>
