@@ -27,4 +27,4 @@ Since the project is built entirely as a standalone client-side application (Van
 
 1. Clone the repository to your local machine:
    ```bash
-https://nisanurozdemir.github.io/Budget-Tracker/
+git clone https://nisanurozdemir.github.io/Budget-Tracker/
