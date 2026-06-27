@@ -22,7 +22,7 @@ You can view the live version of the project here:
 - **JavaScript:** Vanilla JS (ES6+), Async/Await architecture, Fetch API
 - **Fonts & Icons:** Google Fonts (Inter, Space Grotesk), FontAwesome v6
 
-## ⚙️ Installation and Setup
+## ⚙️ Installation and Setup.
 
 Since the project is built entirely as a standalone client-side application (Vanilla JS), it does not require any local dependencies or package installations.
 
